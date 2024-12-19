@@ -1,4 +1,4 @@
-const port = 4000;
+const port = process.env.PORT || 4001;
 const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
@@ -12,7 +12,7 @@ app.use(cors());
 
 
 // Database Connection with MongoDB
-mongoose.connect('mongodb+srv://janjanamjyothsna:tae123@cluster0.ljhxp.mongodb.net/e-commerce')
+mongoose.connect(process.env.MONGO_URL)
 
 // API Creation
 
@@ -174,7 +174,7 @@ app.post('/signup', async (req, res) => {
     }
   }
 
-  const token = jwt.sign(data, 'secret_ecom');
+  const token = jwt.sign(data, process.env.JWT_SECRET_KEY);
   res.json({success: true, token})
 })
 
@@ -191,7 +191,7 @@ app.post('/login', async (req, res) => {
           id: user.id
         }
       }
-      const token = jwt.sign(data, 'secret_ecom');
+      const token = jwt.sign(data, 'process.env.JWT_SECRET_KEY');
       res.json({success:true, token});
     } else {
       res.json({success: false, errors: 'Wrong Password'});
@@ -225,7 +225,7 @@ const fetchUser = async (req, res, next) => {
     res.status(401).send({errors:'Please authenticate using valid token'})
   } else {
     try {
-      const data = jwt.verify(token, 'secret_ecom');
+      const data = jwt.verify(token, 'process.env.JWT_SECRET_KEY');
       req.user = data.user;
       next();
     } catch (error) {
